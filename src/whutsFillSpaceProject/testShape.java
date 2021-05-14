@@ -58,7 +58,7 @@ public class testShape {
 			System.exit(1);
 		}
 		
-		ShapeInOrientation ret = new ShapeInOrientation(shape, centerI, centerJ, centerK);
+		ShapeInOrientation ret = new ShapeInOrientation(shape);
 		
 		return ret;
 	}
@@ -77,7 +77,22 @@ public class testShape {
 		int centerI=0;
 		int centerJ=0;
 		int centerK = 0;
-		ShapeInOrientation ret = new ShapeInOrientation(shape, centerI, centerJ, centerK);
+		ShapeInOrientation ret = new ShapeInOrientation(shape);
+		
+		return ret;
+	}
+	
+	
+
+	public static ShapeInOrientation setupPrism() {
+
+		
+		//Try 187:
+		boolean shape[][][] = clearShape();
+		
+		shape[0][1][1] = true;
+		
+		ShapeInOrientation ret = new ShapeInOrientation(shape);
 		
 		return ret;
 	}

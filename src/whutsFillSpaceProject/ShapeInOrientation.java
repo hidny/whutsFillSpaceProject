@@ -8,38 +8,15 @@ public class ShapeInOrientation {
 	
 	private boolean shape[][][] = new boolean[DIM_SIZE][DIM_SIZE][DIM_SIZE];
 	
-	
-	/*private int centeri = -1;
-	private int centerj = -1;
-	private int centerk = -1;
-	*/
+
 	
 	public boolean[][][] getShape() {
 		return shape;
 	}
-/*
-	//TODO: use later:
-	public int getCenteri() {
-		return centeri;
-	}
-
-	//TODO: use later:
-	public int getCenterj() {
-		return centerj;
-	}
-
-	//TODO: use later:
-	public int getCenterk() {
-		return centerk;
-	}
-*/
 	
-	public ShapeInOrientation(boolean shape[][][], int centeri, int centerj, int centerk) {
+	public ShapeInOrientation(boolean shape[][][]) {
 		hardCopyShape(shape);
-		
-		/*this.centeri = centeri;
-		this.centerj = centerj;
-		this.centerk = centerk;*/
+
 	}
 	
 	private void hardCopyShape(boolean shapeIn[][][]) {
@@ -146,21 +123,13 @@ public class ShapeInOrientation {
 						
 					}
 					
-					/*if(input.centeri == newi3
-							&& input.centerj == newj3
-							&& input.centerk == newk3 ) {
-
-						newCenterI = i;
-						newCenterJ = j;
-						newCenterk = k;
-					}*/
 					
 					retShape[i][j][k] = input.shape[newi3][newj3][newk3];
 				}
 			}
 		}
 		
-		return new ShapeInOrientation(retShape, newCenterI, newCenterJ, newCenterk);
+		return new ShapeInOrientation(retShape);
 	}
 	
 	
@@ -182,4 +151,27 @@ public class ShapeInOrientation {
 		return true;
 	}
 	//TODO: insert into space based on (centeri, centerj, centerk)
+	
+	
+	public static final int NUM_CUBES_PER_SHAPE = 8;
+	
+	public String[] getOffsets() {
+		String ret[] = new String[NUM_CUBES_PER_SHAPE];
+		
+		int numFound = 0;
+		
+		for(int i=0; i<this.shape.length; i++) {
+			for(int j=0; j<this.shape.length; j++) {
+				for(int k=0; k<this.shape.length; k++) {
+					
+					if(this.shape[i][j][k]) {
+						ret[numFound] = i + "," + j + "," + k;
+						numFound++;
+					}
+				}
+			}
+		}
+		
+		return ret;
+	}
 }
