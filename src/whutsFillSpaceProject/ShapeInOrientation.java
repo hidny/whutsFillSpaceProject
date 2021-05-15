@@ -9,12 +9,17 @@ public class ShapeInOrientation {
 	private boolean shape[][][] = new boolean[DIM_SIZE][DIM_SIZE][DIM_SIZE];
 	
 
+	private String name = "";
 	
+	public String getName() {
+		return name;
+	}
+
 	public boolean[][][] getShape() {
 		return shape;
 	}
 	
-	public ShapeInOrientation(boolean shape[][][]) {
+	public ShapeInOrientation(boolean shape[][][], String name) {
 		hardCopyShape(shape);
 
 	}
@@ -129,7 +134,7 @@ public class ShapeInOrientation {
 			}
 		}
 		
-		return new ShapeInOrientation(retShape);
+		return new ShapeInOrientation(retShape, input.name);
 	}
 	
 	

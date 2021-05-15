@@ -8,7 +8,7 @@ public class testShape {
 		System.out.println("Start");
 		ShapeInOrientation initShap = setupShape187();
 		
-		AllOrientationGetter.getAllOrientation(initShap);
+		First3dShapeFiller.getAllOrientation(initShap);
 		
 		System.out.println("Done");
 		//TODO: draw shape
@@ -58,7 +58,7 @@ public class testShape {
 			System.exit(1);
 		}
 		
-		ShapeInOrientation ret = new ShapeInOrientation(shape);
+		ShapeInOrientation ret = new ShapeInOrientation(shape, "Shape 187");
 		
 		return ret;
 	}
@@ -84,7 +84,7 @@ public class testShape {
 		shape[1][1][2] = true;
 
 		
-		ShapeInOrientation ret = new ShapeInOrientation(shape);
+		ShapeInOrientation ret = new ShapeInOrientation(shape, "Dali Cross");
 		
 		return ret;
 	}
@@ -103,7 +103,7 @@ public class testShape {
 		int centerI=0;
 		int centerJ=0;
 		int centerK = 0;
-		ShapeInOrientation ret = new ShapeInOrientation(shape);
+		ShapeInOrientation ret = new ShapeInOrientation(shape, "Basic Prism");
 		
 		return ret;
 	}
@@ -118,7 +118,7 @@ public class testShape {
 		
 		shape[0][1][1] = true;
 		
-		ShapeInOrientation ret = new ShapeInOrientation(shape);
+		ShapeInOrientation ret = new ShapeInOrientation(shape, "Single cube. Should fill space.");
 		
 		return ret;
 	}

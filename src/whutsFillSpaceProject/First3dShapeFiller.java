@@ -91,7 +91,7 @@ Stack:
 //TODO: order by num neighbours...
 // and try the one with most neighbours at some dist...
 
-public class AllOrientationGetter {
+public class First3dShapeFiller {
 
 	public static final int SIZE = 100;
 	public static boolean space[][][] = new boolean[SIZE][SIZE][SIZE];
@@ -112,6 +112,14 @@ public class AllOrientationGetter {
 	public static long DEBUG_PRINT_PERIOD = 1000000;
 	//public static long DEBUG_PRINT_PERIOD = 1;
 	
+	
+
+	//Limit the number of orientations, so the algo can go faster at the cost of maybe missing solutions:
+	public static HashSet<Integer> orientationsUsed = new HashSet<Integer>();
+	public static int numOrientations[] = new int[24];
+	public static int LIMIT_SHAPES_USED = 2;
+	//End limit number of orientations.
+	
 	public static void main(String args[]) {
 		
 		//lazy strat:
@@ -119,10 +127,11 @@ public class AllOrientationGetter {
 		ShapeInOrientation initShape = testShape.setupShape187();
 		//ShapeInOrientation initShape = testShape. setupPrism();
 		
+		System.out.println("Solving shape: " + initShape.getName());
 		//Should work:
 		//ShapeInOrientation initShape = testShape.setupShapeCross();
-				
-				
+		
+		
 		ShapeInOrientation allOrientations[] = getAllOrientation(initShape);
 		
 		String allOffset[][] = new String[allOrientations.length][];
@@ -207,6 +216,10 @@ public class AllOrientationGetter {
 				removeShape(allOrientations[mStart], iToUse, jToUse, kToUse);
 				//System.out.println("Undo: " + undoDebug + "( " + stackSize + " )  space: " + debugNumSpacesFilled);
 
+				numOrientations[mStart]--;
+				if(numOrientations[mStart] == 0) {
+					orientationsUsed.remove(mStart);
+				}
 				
 				retryingToFillSameSpot = false;
 
@@ -240,56 +253,64 @@ public class AllOrientationGetter {
 					int kToUse = curk - ko;
 					
 					if(isSpaceFillable(allOrientations[m], iToUse, jToUse, kToUse)) {
-						
-						String debugAdd = m + "," + n + "," + curi + "," +  curj + "," +  curk;
-						stack.add(debugAdd);
-						if(debugStackSize < debugStack.length) {
-							debugStack[debugStackSize] = debugAdd;
-						}
-						
-						debugNum ++;
-						debugStackSize++;
-						
-						fillSpace(allOrientations[m], iToUse, jToUse, kToUse);
-						
-						if(debugNum % DEBUG_PRINT_PERIOD == 0) {
-							System.out.println("Stack add: " + debugAdd + " ( " + debugStackSize + " )" + " space: " + debugNumSpacesFilled);
-							System.out.println("Stack:");
-							for(int s=0; s<debugStackSize; s++) {
-								System.out.println("  " + debugStack[s]);
-							}
-						}
-						
-						String tmp = getNextEmptySpace(curi, curj, curk);
-						
-						if(tmp.equals("")) {
-							System.out.println("SPACE FILLED!");
-							break FILL_NEXT_SPOT;
+
+						if(orientationsUsed.size() < LIMIT_SHAPES_USED
+								|| orientationsUsed.contains(m)) {
 							
-						} else if(tmp.equals("Nope")) {
-							//System.out.println("Nope");
-							break TRY_A_SHAPE;
+							numOrientations[m]++;
+							orientationsUsed.add(m);
+							
+							String debugAdd = m + "," + n + "," + curi + "," +  curj + "," +  curk;
+							stack.add(debugAdd);
+							if(debugStackSize < debugStack.length) {
+								debugStack[debugStackSize] = debugAdd;
+							}
+							
+							
+							debugNum ++;
+							debugStackSize++;
+							
+							fillSpace(allOrientations[m], iToUse, jToUse, kToUse);
+							
+							if(debugNum % DEBUG_PRINT_PERIOD == 0) {
+								System.out.println("Stack add: " + debugAdd + " ( " + debugStackSize + " )" + " space: " + debugNumSpacesFilled);
+								System.out.println("Stack:");
+								for(int s=0; s<debugStackSize; s++) {
+									System.out.println("  " + debugStack[s]);
+								}
+							}
+							
+							String tmp = getNextEmptySpace(curi, curj, curk);
+							
+							if(tmp.equals("")) {
+								System.out.println("SPACE FILLED!");
+								break FILL_NEXT_SPOT;
+								
+							} else if(tmp.equals("Nope")) {
+								//System.out.println("Nope");
+								break TRY_A_SHAPE;
+							}
+							
+							int previ = curi;
+							int prevj = curj;
+							int prevk = curk;
+							
+							nextEmpty = getNextEmptySpace(curi, curj, curk).split(",");
+							curi = Integer.parseInt(nextEmpty[0]);
+							curj = Integer.parseInt(nextEmpty[1]);
+							curk = Integer.parseInt(nextEmpty[2]);
+							
+							if((curi == previ && curj == prevj && curk == prevk)
+									|| space[previ][prevj][prevk] == false) {
+								System.out.println("ERROR: didn't fill current space!");
+								System.exit(1);
+							}
+							//if(debugNum % DEBUG_PRINT_PERIOD == 0) {
+							////	System.out.println("Next empty space: " +  getNextEmptySpace(curi, curj, curk) + "\nManhattan dist from start: "+ (curi + curj + curk - 3*ARRAY_MARGIN_SIZE));
+							//}
+							
+							continue FILL_NEXT_SPOT;
 						}
-						
-						int previ = curi;
-						int prevj = curj;
-						int prevk = curk;
-						
-						nextEmpty = getNextEmptySpace(curi, curj, curk).split(",");
-						curi = Integer.parseInt(nextEmpty[0]);
-						curj = Integer.parseInt(nextEmpty[1]);
-						curk = Integer.parseInt(nextEmpty[2]);
-						
-						if((curi == previ && curj == prevj && curk == prevk)
-								|| space[previ][prevj][prevk] == false) {
-							System.out.println("ERROR: didn't fill current space!");
-							System.exit(1);
-						}
-						//if(debugNum % DEBUG_PRINT_PERIOD == 0) {
-						////	System.out.println("Next empty space: " +  getNextEmptySpace(curi, curj, curk) + "\nManhattan dist from start: "+ (curi + curj + curk - 3*ARRAY_MARGIN_SIZE));
-						//}
-						
-						continue FILL_NEXT_SPOT;
 					}
 				}
 			}
