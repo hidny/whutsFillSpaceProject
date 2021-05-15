@@ -63,6 +63,32 @@ public class testShape {
 		return ret;
 	}
 	
+	public static ShapeInOrientation setupShapeCross() {
+
+		
+		//Try cross (Should fill space):
+		boolean shape[][][] = clearShape();
+		
+		shape[1][1][0] = true;
+		
+
+		shape[1][0][1] = true;
+		
+		shape[0][1][1] = true;
+		shape[1][1][1] = true;
+		shape[2][1][1] = true;
+		shape[3][1][1] = true;
+		
+		shape[1][2][1] = true;
+		
+		shape[1][1][2] = true;
+
+		
+		ShapeInOrientation ret = new ShapeInOrientation(shape);
+		
+		return ret;
+	}
+
 	public static ShapeInOrientation setupFilledShape() {
 		boolean shape[][][] = clearShape();
 		

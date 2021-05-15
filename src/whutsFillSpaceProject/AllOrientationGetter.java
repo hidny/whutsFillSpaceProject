@@ -110,13 +110,19 @@ public class AllOrientationGetter {
 	
 	public static String debugStack[] = new String[100];
 	public static long DEBUG_PRINT_PERIOD = 1000000;
+	//public static long DEBUG_PRINT_PERIOD = 1;
 	
 	public static void main(String args[]) {
 		
 		//lazy strat:
+		//Should fail:
 		ShapeInOrientation initShape = testShape.setupShape187();
 		//ShapeInOrientation initShape = testShape. setupPrism();
 		
+		//Should work:
+		//ShapeInOrientation initShape = testShape.setupShapeCross();
+				
+				
 		ShapeInOrientation allOrientations[] = getAllOrientation(initShape);
 		
 		String allOffset[][] = new String[allOrientations.length][];
@@ -161,19 +167,21 @@ public class AllOrientationGetter {
 					System.out.println("ERROR: stack size -1");
 					//System.out.println()
 				}
-				//0,4,10,10,10
-				//TODO: if stack size == 0:
-				//it's over!
-				if(debugStackSize == 0) {
-					System.out.println("TODO: should be done because we should be able to start with a piece in any orientation!");
-				}
 
 				if(debugStackSize < debugStack.length) {
 					debugStack[debugStackSize] = "";
 				}
 				
 				String undoDebug = stack.pop();
-				
+
+				//TODO: if stack size == 0:
+				//it's over!
+				if(debugStackSize == 0) {
+					System.out.println("TODO: should be done because we should be able to start with a piece in any orientation! debugNum: " + debugNum);
+					System.out.println(undoDebug);
+					System.exit(1);
+				}
+
 				
 				String undoTokens[] = undoDebug.split(",");
 				
@@ -259,13 +267,24 @@ public class AllOrientationGetter {
 							break FILL_NEXT_SPOT;
 							
 						} else if(tmp.equals("Nope")) {
+							//System.out.println("Nope");
 							break TRY_A_SHAPE;
 						}
+						
+						int previ = curi;
+						int prevj = curj;
+						int prevk = curk;
+						
 						nextEmpty = getNextEmptySpace(curi, curj, curk).split(",");
 						curi = Integer.parseInt(nextEmpty[0]);
 						curj = Integer.parseInt(nextEmpty[1]);
 						curk = Integer.parseInt(nextEmpty[2]);
 						
+						if((curi == previ && curj == prevj && curk == prevk)
+								|| space[previ][prevj][prevk] == false) {
+							System.out.println("ERROR: didn't fill current space!");
+							System.exit(1);
+						}
 						//if(debugNum % DEBUG_PRINT_PERIOD == 0) {
 						////	System.out.println("Next empty space: " +  getNextEmptySpace(curi, curj, curk) + "\nManhattan dist from start: "+ (curi + curj + curk - 3*ARRAY_MARGIN_SIZE));
 						//}
@@ -285,7 +304,7 @@ public class AllOrientationGetter {
 		
 	}
 	
-	public static String getNextEmptySpace(int iinput, int jinput, int kinput) {
+	public static String getNextEmptySpaceold5(int iinput, int jinput, int kinput) {
 		
 		String ret = "";
 		int curDist = -1;
@@ -304,6 +323,8 @@ public class AllOrientationGetter {
 						
 						continue;
 					} else if(k >= space[0][0].length - ARRAY_MARGIN_SIZE) {
+						continue;
+					} else if(space[i][j][k]) {
 						continue;
 					}
 					
@@ -332,12 +353,17 @@ public class AllOrientationGetter {
 						continue;
 					} else if(k >= space[0][0].length - ARRAY_MARGIN_SIZE) {
 						continue;
+					} else if(space[i][j][k]) {
+						continue;
 					}
 					
 					
 					int numNeighbours = 0;
 					
 					for(int tmp=-1; tmp<=1; tmp++) {
+						if(tmp == 0) {
+							continue;
+						}
 						if(space[i+tmp][j][k]) {
 							numNeighbours++;
 						}
@@ -382,6 +408,8 @@ public class AllOrientationGetter {
 						
 						continue;
 					} else if(k >= space[0][0].length - ARRAY_MARGIN_SIZE) {
+						continue;
+					} else if(space[i][j][k]) {
 						continue;
 					}
 					
@@ -432,14 +460,13 @@ public class AllOrientationGetter {
 		return "";
 	}
 	
-	public static String getNextEmptySpaceOLD4(int iinput, int jinput, int kinput) {
+	public static String getNextEmptySpaceWirdNeibours(int iinput, int jinput, int kinput) {
 		
 		
 		for(int dist = iinput + jinput + kinput; dist <=NUMBER_OF_DIMENSIONS * space.length; dist++) {
 
 			String best = "";
 			int bestNumNeighbours = -1;
-			int bestDistMargin = -1;
 			
 			for(int i = ARRAY_MARGIN_SIZE; i<=dist && i<space.length - ARRAY_MARGIN_SIZE; i++) {
 
@@ -451,6 +478,8 @@ public class AllOrientationGetter {
 						
 						continue;
 					} else if(k >= space[0][0].length - ARRAY_MARGIN_SIZE) {
+						continue;
+					} else if(space[i][j][k]) {
 						continue;
 					}
 					
@@ -532,6 +561,8 @@ public class AllOrientationGetter {
 						continue;
 					} else if(k >= space[0][0].length - ARRAY_MARGIN_SIZE) {
 						continue;
+					} else if(space[i][j][k]) {
+						continue;
 					}
 					
 					if(space[i][j][k] == false) {
@@ -582,7 +613,7 @@ public class AllOrientationGetter {
 	}
 	
 	//best so far:
-	public static String getNextEmptySpaceOld(int iinput, int jinput, int kinput) {
+	public static String getNextEmptySpace(int iinput, int jinput, int kinput) {
 		
 		for(int dist = iinput + jinput + kinput; dist <=NUMBER_OF_DIMENSIONS * space.length; dist++) {
 			
@@ -597,6 +628,8 @@ public class AllOrientationGetter {
 						
 						continue;
 					} else if(k >= space[0][0].length - ARRAY_MARGIN_SIZE) {
+						continue;
+					} else if(space[i][j][k]) {
 						continue;
 					}
 					
@@ -629,9 +662,9 @@ public class AllOrientationGetter {
 						int jToUse = j + js;
 						int kToUse = k + ks;
 						
-						if(iToUse >= 0 && iToUse <  space.length
-						&& jToUse >= 0 && jToUse <  space[0].length
-						&& kToUse >= 0 && kToUse <  space[0][0].length ) {
+						//if(iToUse >= 0 && iToUse <  space.length
+						//&& jToUse >= 0 && jToUse <  space[0].length
+						//&& kToUse >= 0 && kToUse <  space[0][0].length ) {
 							
 							if(space[iToUse][jToUse][kToUse] == true) {
 								System.out.println("ERROR: trying to fill already filled space!");
@@ -641,11 +674,11 @@ public class AllOrientationGetter {
 							//System.out.println("Filling: " + iToUse + "," + jToUse + "," + kToUse);
 							space[iToUse][jToUse][kToUse] = true;
 							debugNumSpacesFilled++;
-						} else {
-							System.out.println("AH: Filling source: " + is + "," + js + "," + ks);
-							System.out.println("AH: Filling: " + iToUse + "," + jToUse + "," + kToUse);
-							System.exit(1);
-						}
+						//} else {
+						//	System.out.println("AH: Filling source: " + is + "," + js + "," + ks);
+						//	System.out.println("AH: Filling: " + iToUse + "," + jToUse + "," + kToUse);
+						//	System.exit(1);
+						//}
 					}
 				}
 			}
@@ -668,9 +701,9 @@ public class AllOrientationGetter {
 						int jToUse = j + js;
 						int kToUse = k + ks;
 
-						if(iToUse >= 0 && iToUse <  space.length
-						&& jToUse >= 0 && jToUse <  space[0].length
-						&& kToUse >= 0 && kToUse <  space[0][0].length ) {
+						//if(iToUse >= 0 && iToUse <  space.length
+						//&& jToUse >= 0 && jToUse <  space[0].length
+						//&& kToUse >= 0 && kToUse <  space[0][0].length ) {
 							
 							if(space[iToUse][jToUse][kToUse] == false) {
 								System.out.println("ERROR: trying to remove shape that isn't there!");
@@ -679,10 +712,10 @@ public class AllOrientationGetter {
 							
 							space[iToUse][jToUse][kToUse] = false;
 							debugNumSpacesFilled--;
-						} else {
-							System.out.println("AH: removing: " + iToUse + "," + jToUse + "," + kToUse);
-							System.exit(1);
-						}
+						//} else {
+						//	System.out.println("AH: removing: " + iToUse + "," + jToUse + "," + kToUse);
+						//	System.exit(1);
+						//}
 					}
 				}
 			}
@@ -690,6 +723,7 @@ public class AllOrientationGetter {
 		
 	}
 
+	//TODO: don't scan tru table, just use list of numbers...
 	public static boolean isSpaceFillable(ShapeInOrientation shapeOrientation, int is, int js, int ks) {
 		
 		boolean table[][][] = shapeOrientation.getShape();
@@ -705,14 +739,15 @@ public class AllOrientationGetter {
 						int jToUse = j + js;
 						int kToUse = k + ks;
 
-						if(iToUse >= 0 && iToUse <  space.length
-						&& jToUse >= 0 && jToUse <  space[0].length
-						&& kToUse >= 0 && kToUse <  space[0][0].length ) {
+						//I created marins, so w can skip tis cck:
+						//if(iToUse >= 0 && iToUse <  space.length
+						//&& jToUse >= 0 && jToUse <  space[0].length
+						//&& kToUse >= 0 && kToUse <  space[0][0].length ) {
 							
 							if(space[iToUse][jToUse][kToUse] == true) {
 								return false;
 							}
-						}
+						//}
 					}
 				}
 			}
@@ -759,8 +794,20 @@ public class AllOrientationGetter {
 		
 		System.out.println("Number of orientations found: " + curNumFound);
 		
+		if(curNumFound < ret.length) {
+			
+			ShapeInOrientation ret2[] = new ShapeInOrientation[curNumFound];
+			
+			for(int i=0; i<ret2.length; i++) {
+				ret2[i] = ret[i];
+			}
+			
+			return ret;
+			
+		} else {
 		
-		return ret;
+			return ret;
+		}
 	}
 	
 	

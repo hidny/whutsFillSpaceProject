@@ -70,8 +70,8 @@ public class DrawShape  extends JPanel {
 	//private ShapeInOrientation rotations[][][] = new  ShapeInOrientation()[NUM_ROTATION][NUM_ROTATION][NUM_ROTATION];
 	
 	
-	private ShapeInOrientation curShape = testShape.setupShape187();
-	
+	//private ShapeInOrientation curShape = testShape.setupShape187();
+	private ShapeInOrientation curShape = testShape.setupShapeCross();
 	
 	public void drawing() {
 		repaint();
